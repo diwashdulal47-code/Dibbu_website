@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dibbu-7 Website</title>
+<style>
+/* --- GENERAL --- */
+body{margin:0;font-family:Arial;background:black;color:white;overflow:hidden;}
+.top-bar{background:purple;height:60px;display:flex;align-items:center;justify-content:center;position:relative;}
+.top-left{position:absolute;left:10px;display:flex;align-items:center;font-size:16px;display:none;}
+.top-left img{width:35px;height:35px;border-radius:50%;margin-right:8px;}
+.menu{position:absolute;right:15px;top:18px;cursor:pointer;z-index:100;}
+.menu div{height:3px;width:25px;background:white;margin:5px 0;}
+.dropdown{display:none;position:absolute;top:60px;right:10px;background:#222;border-radius:6px;width:220px;z-index:100;}
+.dropdown div{padding:10px;border-bottom:1px solid #444;cursor:pointer;}
+.dropdown div:hover{background:purple;}
+.slide{display:none;flex-direction:column;justify-content:center;align-items:center;padding:20px;height:calc(100vh-60px);}
+.active-slide{display:flex;}
+.loader{width:50px;height:50px;border:5px solid #555;border-top:5px solid purple;border-radius:50%;animation:spin 1s linear infinite;margin-top:20px;}
+@keyframes spin{100%{transform:rotate(360deg);}}
+input,select,textarea{width:90%;padding:10px;margin:10px 0;border:none;border-radius:6px;}
+button{background:purple;color:white;border:none;padding:10px 18px;border-radius:6px;margin-top:10px;cursor:pointer;}
+.next-btn{align-self:flex-end;margin-right:5%;}
+.back{color:lightblue;margin-bottom:15px;cursor:pointer;display:block;}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-left" id="userInfo">
+    <img id="topPic" src="" alt="Profile">
+    <span id="topName"></span>
+  </div>
+  <h2 id="titleText">Dibbu-7</h2>
+  <div class="menu" id="menuBtn"><div></div><div></div><div></div></div>
+</div>
+
+<div class="dropdown" id="menuBox">
+  <div onclick="openPage('accountPop')">Account</div>
+  <div onclick="openPage('settingPop')">Setting</div>
+  <div onclick="openPage('aboutPop')">About</div>
+  <div onclick="openPage('helpPop')">Help</div>
+  <div onclick="openPage('feedbackPop')">Feedback</div>
+</div>
+
+<!-- --- SLIDES --- -->
+<div class="slide active-slide" id="slide1">
+  <h2 id="homeText">Create New Dibbu Account</h2>
+  <button id="createBtn">Create Account</button>
+  <input type="text" id="searchBar" placeholder="Search..." style="margin-top:15px;padding:8px;width:80%;border-radius:5px;">
+  <div class="loader" id="load1" style="display:none;"></div>
+</div>
+
+<div class="slide" id="slide2">
+  <span class="back" onclick="prevSlide()">Back</span>
+  <h2 id="formTitle">Enter Details</h2>
+  <input type="text" id="fullName" placeholder="Full Name">
+  <input type="date" id="dob">
+  <select id="sex">
+    <option value="">Sex</option>
+    <option>Male</option>
+    <option>Female</option>
+    <option>Other</option>
+  </select>
+  <button class="next-btn" id="nextFormBtn">Next</button>
+  <div class="loader" id="load2" style="display:none;"></div>
+</div>
+
+<div class="slide" id="slide3">
+  <span class="back" onclick="prevSlide()">Back</span>
+  <h2 id="profileTitle">Setup Profile</h2>
+  <input type="text" id="accountName" placeholder="Account Name">
+  <input type="password" id="password" placeholder="Password">
+  <label id="profileLabel">Select Profile Picture:</label>
+  <input type="file" accept="image/*" id="profilePic">
+  <button class="next-btn" id="nextProfileBtn">Next</button>
+  <div class="loader" id="load3" style="display:none;"></div>
+</div>
+
+<div class="slide" id="slide4">
+  <h2 id="creatingText">Creating Account...</h2>
+  <div class="loader" id="load4"></div>
+  <div id="createdMsg" style="display:none;margin-top:15px;">Account Created ✅</div>
+</div>
+
+<!-- --- POPUPS --- -->
+<div class="popup" id="accountPop" style="display:none;">
+  <span class="back" onclick="closePop()">Back</span>
+  <h3>Account Info</h3>
+  <p id="accountInfo">No account created yet.</p>
+</div>
+<div class="popup" id="settingPop" style="display:none;">
+  <span class="back" onclick="closePop()">Back</span>
+  <h3>Settings</h3>
+  <button onclick="addAccountFromSettings()">Add Another Account</button>
+  <br><br>
+  <label>Language:</label>
+  <select onchange="changeLanguage(this.value)">
+    <option value="en">English</option>
+    <option value="np">Nepali</option>
+    <option value="hi">Hindi</option>
+  </select>
+  <br><br>
+  <button onclick="removeAccount()">Remove Account</button>
+</div>
+<div class="popup" id="aboutPop" style="display:none;">
+  <span class="back" onclick="closePop()">Back</span>
+  <p>This website is made by Dibbu (Diwash Dulal) with the help of ChatGPT AI tool.<br>
+  Gmail: diwashdulal47@gmail.com<br>
+  Youtube: DIWASH<br>
+  Instagram: Diwash_7_7</p>
+</div>
+<div class="popup" id="helpPop" style="display:none;">
+  <span class="back" onclick="closePop()">Back</span>
+  <textarea id="helpText" placeholder="Type your question..." style="width:90%;height:100px;"></textarea>
+  <button onclick="alert('Question sent')">Ask</button>
+</div>
+<div class="popup" id="feedbackPop" style="display:none;">
+  <span class="back" onclick="closePop()">Back</span>
+  <textarea id="fbText" style="width:90%;height:100px;"></textarea>
+  <button onclick="saveFeedback()">Send</button>
+  <div class="feedback-list" id="fbList"></div>
+</div>
+
+<script>
+// ========== GLOBAL ==========
+let slides=document.querySelectorAll(".slide");
+let currentSlide=0;
+let accounts = JSON.parse(localStorage.getItem("dibbuAccounts")) || [];
+
+// Pre-create developer account
+if(!accounts.some(a=>a.name==="Developer")){
+    accounts.push({name:"Developer", password:"dev123", pic:""});
+    localStorage.setItem("dibbuAccounts", JSON.stringify(accounts));
+}
+
+// ========== SLIDE FUNCTIONS ==========
+function showSlide(index){
+  slides.forEach(s=>s.classList.remove("active-slide"));
+  slides[index].classList.add("active-slide");
+  currentSlide=index;
+}
+function nextSlide(){showSlide(currentSlide+1);}
+function prevSlide(){if(currentSlide>0) showSlide(currentSlide-1);}
+
+// ========== MENU ==========
+const menuBtn = document.getElementById("menuBtn");
+const menuBox = document.getElementById("menuBox");
+menuBtn.addEventListener("click",(e)=>{
+  e.stopPropagation();
+  menuBox.style.display = (menuBox.style.display==="block") ? "none" : "block";
+});
+document.addEventListener("click",()=>menuBox.style.display="none");
+menuBox.addEventListener("click",(e)=>e.stopPropagation());
+
+// ========== CREATE ACCOUNT BUTTON ==========
+const createBtn = document.getElementById("createBtn");
+const load1 = document.getElementById("load1");
+createBtn.addEventListener("click", ()=>{
+    load1.style.display="block";
+    setTimeout(()=>{
+        load1.style.display="none";
+        createBtn.style.display="none";
+        nextSlide();
+    },5000);
+});
+
+// ========== SLIDE2 NEXT ==========
+document.getElementById("nextFormBtn").addEventListener("click",()=>{
+    const f=document.getElementById("fullName").value.trim();
+    const d=document.getElementById("dob").value;
+    const s=document.getElementById("sex").value;
+    if(!f||!d||!s){alert("Fill all fields"); return;}
+    const age = new Date().getFullYear() - new Date(d).getFullYear();
+    if(age<15){alert("Must be 15+ to create account"); return;}
+    nextSlide();
+});
+
+// ========== SLIDE3 NEXT ==========
+document.getElementById("nextProfileBtn").addEventListener("click",()=>{
+    const name = document.getElementById("accountName").value.trim();
+    const pass = document.getElementById("password").value.trim();
+    const file = document.getElementById("profilePic").files[0];
+    if(!name||!pass){alert("Fill all fields"); return;}
+    if(accounts.some(a=>a.name.toLowerCase()===name.toLowerCase())){
+        alert("Account name already used!"); return;
+    }
+
+    if(file){
+        const reader = new FileReader();
+        reader.onload = function(e){
+            saveAccount(name, pass, e.target.result);
+        };
+        reader.readAsDataURL(file);
+    } else {
+        saveAccount(name, pass, "");
+    }
+});
+
+// ========== SAVE ACCOUNT ==========
+function saveAccount(name, password, picBase64){
+    const acc = {name:name, password:password, pic:picBase64};
+    accounts.push(acc);
+    localStorage.setItem("dibbuAccounts", JSON.stringify(accounts));
+
+    // Show in top-left
+    const info = document.getElementById("userInfo");
+    info.style.display="flex";
+    document.getElementById("topPic").src = picBase64;
+    document.getElementById("topName").textContent = name;
+
+    nextSlide(); // go to creating slide
+    document.getElementById("load4").style.display="block";
+    setTimeout(()=>{
+        document.getElementById("load4").style.display="none";
+        document.getElementById("createdMsg").style.display="block";
+        setTimeout(()=>showSlide(0),3000); // return to first slide
+    },5000);
+}
+
+// ========== REMOVE ACCOUNT ==========
+function removeAccount(){
+    accounts = [];
+    localStorage.removeItem("dibbuAccounts");
+    const info = document.getElementById("userInfo");
+    info.style.display="none";
+    const createBtn = document.getElementById("createBtn");
+    if(createBtn) createBtn.style.display="inline-block";
+    alert("All accounts removed.");
+}
+
+// ========== POPUP FUNCTIONS ==========
+function openPage(id){closePop();document.getElementById(id).style.display="block";}
+function closePop(){document.querySelectorAll(".popup").forEach(p=>p.style.display="none");}
+
+// ========== LANGUAGE SWITCH ==========
+function changeLanguage(lang){
+    const texts = {
+        en:{title:"Dibbu-7",home:"Create New Dibbu Account",form:"Enter Details",fullname:"Full Name",sex:"Sex",profile:"Setup Profile",pic:"Select Profile Picture:",creating:"Creating Account..."},
+        np:{title:"डिब्बु-7",home:"नयाँ डिब्बु खाता बनाउनुहोस्",form:"विवरण भर्नुहोस्",fullname:"पूरा नाम",sex:"लिङ्ग",profile:"प्रोफाइल सेटअप",pic:"प्रोफाइल तस्वीर छान्नुहोस्:",creating:"खाता सिर्जना गर्दै..."},
+        hi:{title:"डिब्बु-7",home:"नया डिब्बु खाता बनाएँ",form:"विवरण भरें",fullname:"पूरा नाम",sex:"लिंग",profile:"प्रोफाइल सेटअप",pic:"प्रोफाइल चित्र चुनें:",creating:"खाता बना रहे हैं..."}
+    };
+    let t=texts[lang]||texts.en;
+    document.getElementById("titleText").textContent = t.title;
+    document.getElementById("homeText").textContent = t.home;
+    document.getElementById("formTitle").textContent = t.form;
+    document.getElementById("fullName").placeholder = t.fullname;
+    document.getElementById("sex").options[0].text = t.sex;
+    document.getElementById("profileTitle").textContent = t.profile;
+    document.getElementById("profileLabel").textContent = t.pic;
+    document.getElementById("creatingText").textContent = t.creating;
+}
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const createBtn = document.getElementById("createBtn");
+
+    // Hide button if an account exists on device
+    const accounts = JSON.parse(localStorage.getItem("dibbuAccounts")) || [];
+    if(accounts.length > 0){
+        createBtn.style.display = "none";
+    } else {
+        createBtn.style.display = "inline-block";
+    }
+
+    // Function to show create button when Add Account is clicked
+    window.showCreateBtn = function() {
+        createBtn.style.display = "inline-block";
+        nextSlide(); // go to slide2 when adding new account
+    }
+
+    // Update button after account creation
+    const originalSaveAccount = window.saveAccount; // keep reference to existing function
+    window.saveAccount = function(name, password, picBase64){
+        const result = originalSaveAccount(name,password,picBase64); // call original save
+        if(result !== false){
+            createBtn.style.display = "none"; // hide button after successful account creation
+        }
+        return result;
+    }
+});
+</script>
+<script>
+// --- Load existing accounts ---
+let accounts = JSON.parse(localStorage.getItem("dibbuAccounts")) || [];
+
+// --- Pre-create developer account if not already exists ---
+if(!accounts.some(a => a.name === "Developerdibu")){
+    accounts.push({name:"Developerdibu", password:"dibbu-7", pic:"", developer:true});
+    localStorage.setItem("dibbuAccounts", JSON.stringify(accounts));
+}
+
+// --- LOGIN FUNCTION (example for slide3 or login form) ---
+function loginAccount(name, password){
+    const acc = accounts.find(a => a.name === name && a.password === password);
+    if(!acc){ alert("Incorrect credentials"); return false; }
+
+    // Show top-left info
+    const info = document.getElementById("userInfo");
+    info.style.display="flex";
+    document.getElementById("topPic").src = acc.pic || ""; 
+    document.getElementById("topName").textContent = acc.name;
+
+    // If developer, show extra features
+    if(acc.developer){
+        showDeveloperFeatures();
+    }
+    return true;
+}
+
+// --- DEVELOPER FEATURES ---
+function showDeveloperFeatures(){
+    // Example: Add a special popup for developer to see all feedback
+    let fbList = JSON.parse(localStorage.getItem("dibbuFeedback")) || [];
+    let devPopup = document.getElementById("feedbackPop");
+    devPopup.style.display = "block";
+    let fbDiv = document.getElementById("fbList");
+    fbDiv.innerHTML = "<h3>All User Feedback:</h3>";
+    fbList.forEach((f,i)=>{
+        fbDiv.innerHTML += `<p><b>User ${i+1}:</b> ${f}</p>`;
+    });
+
+    // Example: Developer extra buttons
+    const extraBtn = document.createElement("button");
+    extraBtn.textContent="Remove Any Account";
+    extraBtn.onclick = ()=>{ removeAnyAccount(); };
+    fbDiv.appendChild(extraBtn);
+}
+
+// --- REMOVE ANY ACCOUNT (developer only) ---
+function removeAnyAccount(){
+    let nameToRemove = prompt("Enter account name to remove:");
+    if(!nameToRemove) return;
+    if(nameToRemove === "Developerdibu"){ alert("Cannot remove developer!"); return;}
+    accounts = accounts.filter(a=>a.name !== nameToRemove);
+    localStorage.setItem("dibbuAccounts", JSON.stringify(accounts));
+    alert(nameToRemove + " removed!");
+}
+
+// --- SAVE FEEDBACK (works for all users, developer can see all) ---
+function saveFeedback(){
+    let text = document.getElementById("fbText").value.trim();
+    if(!text){ alert("Enter feedback"); return;}
+    let fbList = JSON.parse(localStorage.getItem("dibbuFeedback")) || [];
+    fbList.push(text);
+    localStorage.setItem("dibbuFeedback", JSON.stringify(fbList));
+    document.getElementById("fbText").value="";
+    alert("Feedback sent!");
+}
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", ()=>{
+  const createBtn = document.getElementById("createBtn");
+  const load1 = document.getElementById("load1");
+
+  // --- Load accounts ---
+  let accounts = JSON.parse(localStorage.getItem("dibbuAccounts")) || [];
+
+  // --- Show existing account if any ---
+  const info = document.getElementById("userInfo");
+  if(accounts.length > 0){
+    const acc = accounts[0]; // auto-login first account
+    info.style.display="flex";
+    document.getElementById("topPic").src = acc.pic || "";
+    document.getElementById("topName").textContent = acc.name;
+    createBtn.style.display="none"; // hide create button if account exists
+  } else {
+    createBtn.style.display="inline-block";
+  }
+
+  // --- Create New Dibbu Account button ---
+  createBtn.addEventListener("click", ()=>{
+      load1.style.display="block"; // loader
+      setTimeout(()=>{
+          load1.style.display="none";
+          createBtn.style.display="none"; // hide button after creation
+          nextSlide(); // go to slide2
+      },5000);
+  });
+
+  // --- Add Another Account from Settings ---
+  window.addAccountFromSettings = function(){
+      createBtn.style.display="inline-block"; // show create button
+      nextSlide(); // move to slide2
+      closePop(); // close settings popup
+  }
+
+  // --- Save Account Function ---
+  const originalSaveAccount = window.saveAccount; // keep reference if exists
+  window.saveAccount = function(name,password,picBase64){
+      if(accounts.some(a=>a.name.toLowerCase()===name.toLowerCase())){
+          alert("Account name already used!");
+          return false;
+      }
+      const acc = {name:name,password:password,pic:picBase64};
+      accounts.push(acc);
+      localStorage.setItem("dibbuAccounts",JSON.stringify(accounts));
+
+      // Update UI
+      info.style.display="flex";
+      document.getElementById("topPic").src = picBase64;
+      document.getElementById("topName").textContent = name;
+
+      createBtn.style.display="none"; // hide create button after creating
+      nextSlide(); // move to creating slide
+      document.getElementById("load4").style.display="block";
+      setTimeout(()=>{
+          document.getElementById("load4").style.display="none";
+          document.getElementById("createdMsg").style.display="block";
+          setTimeout(()=>showSlide(0),3000); // return to first slide
+      },5000);
+
+      return true;
+  }
+
+  // --- Remove Account ---
+  window.removeAccount = function(){
+      accounts = [];
+      localStorage.removeItem("dibbuAccounts");
+      info.style.display="none";
+      createBtn.style.display="inline-block";
+      alert("All accounts removed!");
+  }
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", ()=>{
+
+  // --- Load accounts ---
+  let accounts = JSON.parse(localStorage.getItem("dibbuAccounts")) || [];
+
+  // --- Elements ---
+  const createBtn = document.getElementById("createBtn");
+  const info = document.getElementById("userInfo");
+  const topPic = document.getElementById("topPic");
+  const topName = document.getElementById("topName");
+  const menuBox = document.getElementById("menuBox");
+
+  // --- Auto-login first account if exists ---
+  if(accounts.length > 0){
+      const acc = accounts[0];
+      info.style.display="flex";
+      topPic.src = acc.pic || "";
+      topName.textContent = acc.name;
+      createBtn.style.display="none"; // hide create button
+  } else {
+      createBtn.style.display="inline-block";
+  }
+
+  // --- Show Account Info ---
+  window.openAccountInfo = function(){
+      const accountPop = document.getElementById("accountPop");
+      accountPop.style.display="block";
+
+      if(accounts.length === 0){
+          document.getElementById("accountInfo").textContent = "No account created yet.";
+      } else {
+          let accList = accounts.map(a=>`${a.name}${a.developer ? " (Developer)" : ""}`).join("\n");
+          document.getElementById("accountInfo").textContent = accList;
+      }
+
+      // If developer, also show total accounts
+      if(accounts.some(a=>a.name==="Developerdibu")){
+          const dev = accounts.find(a=>a.name==="Developerdibu");
+          document.getElementById("accountInfo").textContent += `\nTotal accounts on site: ${accounts.length}`;
+      }
+  }
+
+  // --- Hide create button properly after account creation ---
+  const originalSaveAccount = window.saveAccount; // keep reference
+  window.saveAccount = function(name,password,picBase64){
+      // Check duplicate
+      if(accounts.some(a=>a.name.toLowerCase()===name.toLowerCase())){
+          alert("Account name already used!"); return false;
+      }
+
+      const acc = {name:name,password:password,pic:picBase64};
+      accounts.push(acc);
+      localStorage.setItem("dibbuAccounts",JSON.stringify(accounts));
+
+      // Update top-left
+      info.style.display="flex";
+      topPic.src = picBase64 || "";
+      topName.textContent = name;
+
+      // Hide button reliably
+      if(createBtn) createBtn.style.display="none";
+
+      // Move to creating slide
+      nextSlide();
+      document.getElementById("load4").style.display="block";
+      setTimeout(()=>{
+          document.getElementById("load4").style.display="none";
+          document.getElementById("createdMsg").style.display="block";
+          setTimeout(()=>showSlide(0),3000);
+      },5000);
+
+      return true;
+  }
+
+  // --- Add Another Account from Settings ---
+  window.addAccountFromSettings = function(){
+      createBtn.style.display="inline-block";
+      nextSlide(); // go to slide2
+      closePop(); // close settings
+  }
+
+  // --- Developer shows total accounts in 3-line menu ---
+  function updateMenuDeveloper(){
+      const devAcc = accounts.find(a=>a.name==="Developerdibu");
+      if(devAcc){
+          // Append total accounts to menu
+          menuBox.innerHTML = `
+              <div onclick="openPage('accountPop')">Account</div>
+              <div onclick="openPage('settingPop')">Setting</div>
+              <div onclick="openPage('aboutPop')">About</div>
+              <div onclick="openPage('helpPop')">Help</div>
+              <div onclick="openPage('feedbackPop')">Feedback</div>
+              <div style="padding:10px;color:lightgreen;">Total accounts: ${accounts.length}</div>
+          `;
+      }
+  }
+
+  updateMenuDeveloper();
+
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const menuBtn = document.getElementById("menuBtn");
+    const slides = document.querySelectorAll(".slide");
+    let currentSlide = 0;
+
+    // --- Slide navigation ---
+    function showSlide(index){
+        slides.forEach(s=>s.classList.remove("active-slide"));
+        slides[index].classList.add("active-slide");
+        currentSlide = index;
+    }
+
+    // --- Accounts ---
+    let accounts = JSON.parse(localStorage.getItem("dibbuAccounts")) || [];
+
+    // --- Menu click opens separate slide ---
+    menuBtn.addEventListener("click", ()=>{
+        // If developer is logged in, open developer account slide
+        const topNameText = document.getElementById("topName").textContent;
+        if(topNameText === "Developerdibu"){
+            // Create a developer account slide dynamically if not exists
+            if(!document.getElementById("devAccountSlide")){
+                const devSlide = document.createElement("div");
+                devSlide.className="slide active-slide";
+                devSlide.id="devAccountSlide";
+                devSlide.innerHTML=`
+                    <span class="back" onclick="showSlide(0)">Back</span>
+                    <h2>Account Feature</h2>
+                    <div id="devAccList" style="white-space:pre-line; margin-top:10px;"></div>
+                `;
+                document.body.appendChild(devSlide);
+            } else {
+                document.getElementById("devAccountSlide").classList.add("active-slide");
+            }
+            // Fill account info
+            let accText = accounts.map((a,i)=>`${i+1}. ${a.name}${a.developer ? " (Developer)" : ""}`).join("\n");
+            accText += `\n\nTotal accounts: ${accounts.length}`;
+            document.getElementById("devAccList").textContent = accText;
+
+            // Hide other slides
+            slides.forEach(s=>s.classList.remove("active-slide"));
+            document.getElementById("devAccountSlide").classList.add("active-slide");
+        } else {
+            // Normal user menu slide (optional)
+            alert("Menu clicked! You can open user options here.");
+        }
+    });
+
+});
+</script>
+1. DeveloperDibu (Developer)
+2. User1
+3. User2
+...
+Total accounts: X
+<!-- ADD THIS IN YOUR HTML WHERE YOU WANT AI SECTION (e.g., slide1 or separate slide) -->
+<div class="slide" id="aiSlide">
+  <span class="back" onclick="showSlide(0)">Back</span>
+  <h2>Talk to Diwash AI</h2>
+  <button id="startVoice">🎤 Start Talking</button>
+  <p id="userSpeech" style="margin-top:10px;"></p>
+  <p id="aiResponse" style="margin-top:10px;color:lightgreen;"></p>
+</div>
+<script>
+// --- AI Feature using Web Speech API ---
+const startVoiceBtn = document.getElementById("startVoice");
+const userSpeech = document.getElementById("userSpeech");
+const aiResponse = document.getElementById("aiResponse");
+
+startVoiceBtn.addEventListener("click", () => {
+    if(!('webkitSpeechRecognition' in window)){
+        alert("Your browser does not support voice recognition.");
+        return;
+    }
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.start();
+
+    recognition.onresult = function(event){
+        const transcript = event.results[0][0].transcript;
+        userSpeech.textContent = "You said: " + transcript;
+        generateResponse(transcript);
+    }
+
+    recognition.onerror = function(event){
+        aiResponse.textContent = "Error: " + event.error;
+    }
+});
+
+// --- AI Response (Simple logic) ---
+function generateResponse(text){
+    text = text.toLowerCase();
+    let reply = "";
+
+    if(text.includes("hello") || text.includes("hi")){
+        reply = "Hello! I am Diwash AI. How can I help you today?";
+    } else if(text.includes("your name")){
+        reply = "My name is Diwash, your little AI assistant!";
+    } else if(text.includes("create account")){
+        reply = "You can click the 'Create New Dibbu Account' button to start.";
+    } else if(text.includes("developer")){
+        reply = "Developer account is special. You can see all users and feedback!";
+    } else {
+        reply = "I am not sure about that, but I am learning!";
+    }
+
+    aiResponse.textContent = reply;
+
+    // Speak the reply
+    const synth = window.speechSynthesis;
+    const utter = new SpeechSynthesisUtterance(reply);
+    synth.speak(utter);
+}
+</script>
+<!-- Account popup -->
+<div class="popup" id="accountPop" style="display:none;">
+  <span class="back" onclick="closePop()">Back</span>
+  <h3>Account Info</h3>
+  <button onclick="showAccountNames()">Show Accounts</button>
+  <p id="accountInfo" style="white-space:pre-line; margin-top:10px;"></p>
+</div>
+// --- AI Feature ---
+const startVoiceBtn = document.getElementById("startVoice");
+const userSpeech = document.getElementById("userSpeech");
+const aiResponse = document.getElementById("aiResponse");
+
+startVoiceBtn.addEventListener("click", () => {
+    if(!('webkitSpeechRecognition' in window)){
+        alert("Your browser does not support voice recognition.");
+        return;
+    }
+
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.start();
+
+    recognition.onstart = () => {
+        aiResponse.textContent = "Listening...";
+    }
+
+    recognition.onresult = function(event){
+        const transcript = event.results[0][0].transcript;
+        userSpeech.textContent = "You said: " + transcript;
+        generateResponse(transcript);
+    }
+
+    recognition.onerror = function(event){
+        aiResponse.textContent = "Error: " + event.error;
+    }
+
+    recognition.onend = function(){
+        // recognition stops automatically after speaking
+    }
+});
+
+// --- AI response logic ---
+function generateResponse(text){
+    text = text.toLowerCase();
+    let reply = "";
+
+    if(text.includes("hello") || text.includes("hi")){
+        reply = "Hello! I am Diwash AI. How can I help you today?";
+    } else if(text.includes("your name")){
+        reply = "My name is Diwash, your little AI assistant!";
+    } else if(text.includes("create account")){
+        reply = "Click the Create New Dibbu Account button to start your account.";
+    } else if(text.includes("developer")){
+        reply = "Developer account can see all users and feedback!";
+    } else {
+        reply = "Sorry, I didn't understand. Try asking about account or developer.";
+    }
+
+    aiResponse.textContent = reply;
+
+    // Speak the reply
+    if(window.speechSynthesis){
+        const utter = new SpeechSynthesisUtterance(reply);
+        window.speechSynthesis.speak(utter);
+    }
+}// --- AI Feature ---
+const startVoiceBtn = document.getElementById("startVoice");
+const userSpeech = document.getElementById("userSpeech");
+const aiResponse = document.getElementById("aiResponse");
+
+startVoiceBtn.addEventListener("click", () => {
+    if(!('webkitSpeechRecognition' in window)){
+        alert("Your browser does not support voice recognition.");
+        return;
+    }
+
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.start();
+
+    recognition.onstart = () => {
+        aiResponse.textContent = "Listening...";
+    }
+
+    recognition.onresult = function(event){
+        const transcript = event.results[0][0].transcript;
+        userSpeech.textContent = "You said: " + transcript;
+        generateResponse(transcript);
+    }
+
+    recognition.onerror = function(event){
+        aiResponse.textContent = "Error: " + event.error;
+    }
+
+    recognition.onend = function(){
+        // recognition stops automatically after speaking
+    }
+});
+
+// --- AI response logic ---
+function generateResponse(text){
+    text = text.toLowerCase();
+    let reply = "";
+
+    if(text.includes("hello") || text.includes("hi")){
+        reply = "Hello! I am Diwash AI. How can I help you today?";
+    } else if(text.includes("your name")){
+        reply = "My name is Diwash, your little AI assistant!";
+    } else if(text.includes("create account")){
+        reply = "Click the Create New Dibbu Account button to start your account.";
+    } else if(text.includes("developer")){
+        reply = "Developer account can see all users and feedback!";
+    } else {
+        reply = "Sorry, I didn't understand. Try asking about account or developer.";
+    }
+
+    aiResponse.textContent = reply;
+
+    // Speak the reply
+    if(window.speechSynthesis){
+        const utter = new SpeechSynthesisUtterance(reply);
+        window.speechSynthesis.speak(utter);
+    }
+}
+<!-- 3-line menu button -->
+<div id="menuBtn" style="position:absolute; top:10px; right:10px; cursor:pointer; font-size:24px;">
+  ☰
+</div>
+
+<!-- Menu slide (hidden by default) -->
+<div id="menuSlide" class="slide" style="display:none; background:black; color:white; padding:20px;">
+  <span class="back" onclick="closeMenuSlide()" style="cursor:pointer;">Back</span>
+  <h2 id="menuTitle">Menu</h2>
+  <div id="menuOptions" style="margin-top:20px;"></div>
+</div>
+<!-- 3-line menu button -->
+<div id="menuBtn" style="position:absolute; top:10px; right:10px; cursor:pointer; font-size:24px;">
+  ☰
+</div>
+
+<!-- Menu slide (hidden by default) -->
+<div id="menuSlide" class="slide" style="display:none; background:black; color:white; padding:20px;">
+  <span class="back" onclick="closeMenuSlide()" style="cursor:pointer;">Back</span>
+  <h2>System</h2>
+  <div id="menuOptions" style="margin-top:20px;">
+    <div id="systemOption" style="cursor:pointer; padding:10px; border:1px solid white; width:150px;">
+      System
+    </div>
+  </div>
+</div>
+<!-- First Slide -->
+<div id="slide1" class="slide active-slide" style="position:relative; width:100%; height:100vh; background:black; color:white; text-align:center;">
+  
+  <!-- Top purple bar -->
+  <div style="background:purple; color:white; height:60px; line-height:60px; font-size:24px;">
+    DIBBU.7
+  </div>
+
+  <!-- 3-line menu top-right -->
+  <div id="menuBtn" style="position:absolute; top:10px; right:10px; cursor:pointer; font-size:24px;">
+    ☰
+  </div>
+
+  <!-- Paragraph in middle -->
+  <div style="position:absolute; top:120px; width:100%; text-align:center;">
+    <p id="welcomePara" style="font-size:22px; color:white; max-width:80%; margin:auto;">
+      Welcome to dibbu.com
+    </p>
+    <button id="createBtn" style="margin-top:20px; padding:10px 20px; font-size:18px;">
+      Create New Dibbu Account
+    </button>
+  </div>
+
+</div>
+<!-- AI Slide -->
+<div id="aiSlide" class="slide" style="display:none; background:black; color:white; height:100vh; padding:20px;">
+  <span class="back" onclick="showSlide(0)" style="cursor:pointer; color:lightblue;">Back</span>
+  <h2>Talk to Diwash AI</h2>
+
+  <!-- Chat display -->
+  <div id="chatBox" style="border:1px solid white; height:60%; overflow-y:auto; padding:10px; margin-bottom:10px;">
+  </div>
+
+  <!-- Typing bar -->
+  <input type="text" id="userInput" placeholder="Type your question..." style="width:80%; padding:10px; font-size:16px;">
+  <button id="sendBtn" style="padding:10px 15px; font-size:16px;">Send</button>
+</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dibbu Website</title>
+<style>
+body, html {margin:0; padding:0; height:100%; font-family:Arial, sans-serif; background:black; color:white;}
+.slide {display:none; width:100%; height:100vh; position:relative;}
+.active-slide {display:block;}
+.top-bar {background:purple; color:white; height:60px; line-height:60px; text-align:center; font-size:24px;}
+#menuBtn {position:absolute; top:10px; right:10px; font-size:28px; cursor:pointer;}
+#userInfo {position:absolute; top:10px; left:10px; display:flex; align-items:center; gap:5px;}
+#userInfo img {width:40px; height:40px; border-radius:50%;}
+.button {padding:10px 20px; font-size:18px; margin-top:20px; cursor:pointer;}
+.popup {position:absolute; top:20%; left:10%; width:80%; background:#111; border:1px solid white; padding:20px; display:none;}
+.back {cursor:pointer; color:lightblue; display:block; margin-bottom:10px;}
+</style>
+</head>
+<body>
+
+<!-- First Slide -->
+<div id="slide1" class="slide active-slide">
+  <div class="top-bar">DIBBU.7</div>
+
+  <div id="userInfo" style="display:none;">
+    <img id="topPic" src="">
+    <span id="topName"></span>
+  </div>
+
+  <div id="menuBtn">☰</div>
+
+  <div style="position:absolute; top:120px; width:100%; text-align:center;">
+    <p id="welcomePara" style="font-size:22px; max-width:80%; margin:auto;">Welcome to dibbu.com</p>
+    <button id="createBtn" class="button">Create New Dibbu Account</button>
+  </div>
+</div>
+
+<!-- Menu Slide -->
+<div id="menuSlide" class="slide">
+  <span class="back" onclick="closeMenuSlide()">Back</span>
+  <h2 id="menuTitle">Menu</h2>
+  <div id="menuOptions" style="margin-top:20px;"></div>
+</div>
+
+<!-- Account Popup -->
+<div class="popup" id="accountPop">
+  <span class="back" onclick="closePop()">Back</span>
+  <h3>Accounts</h3>
+  <button onclick="showAccountNames()">Show Accounts</button>
+  <pre id="accountInfo" style="margin-top:10px;"></pre>
+</div>
+
+<script>
+let accounts = JSON.parse(localStorage.getItem("dibbuAccounts")) || [];
+
+// Pre-create developer account if not exists
+if(!accounts.some(a=>a.name==="Developerdibu")){
+  accounts.push({name:"Developerdibu", password:"dibbu-7", pic:"", developer:true});
+  localStorage.setItem("dibbuAccounts", JSON.stringify(accounts));
+}
+
+const slide1 = document.getElementById("slide1");
+const menuBtn = document.getElementById("menuBtn");
+const menuSlide = document.getElementById("menuSlide");
+const menuOptions = document.getElementById("menuOptions");
+const menuTitle = document.getElementById("menuTitle");
+const createBtn = document.getElementById("createBtn");
+const topName = document.getElementById("topName");
+const topPic = document.getElementById("topPic");
+
+// Auto-login first account
+if(accounts.length>0){
+  const acc = accounts[0];
+  topName.textContent = acc.name;
+  if(acc.pic) topPic.src = acc.pic;
+  document.getElementById("userInfo").style.display="flex";
+  createBtn.style.display="none"; // hide create button
+} else {
+  createBtn.style.display="inline-block";
+}
+
+// Create new Dibbu account
+createBtn.addEventListener("click", ()=>{
+  const name = prompt("Enter new account name:");
+  if(!name) return;
+  if(accounts.some(a=>a.name.toLowerCase()===name.toLowerCase())){
+    alert("Account already exists!"); return;
+  }
+  const password = prompt("Set password:");
+  accounts.push({name:name, password:password, pic:"", developer:false});
+  localStorage.setItem("dibbuAccounts", JSON.stringify(accounts));
+  topName.textContent = name;
+  document.getElementById("userInfo").style.display="flex";
+  createBtn.style.display="none";
+  alert("Account created!");
+});
+
+// Menu click
+menuBtn.addEventListener("click", ()=>{
+  menuSlide.style.display="block";
+  const currentAcc = accounts.find(a=>a.name===topName.textContent);
+  if(currentAcc && currentAcc.developer){
+    menuTitle.textContent = "System";
+    menuOptions.innerHTML = `<div style="white-space:pre-line;">`+
+      accounts.map((a,i)=>`${i+1}. ${a.name}${a.developer?" (Developer)":""}`).join("\n")+
+      `\n\nTotal accounts: ${accounts.length}`+
+      `</div>`;
+  } else {
+    menuTitle.textContent = "Menu";
+    menuOptions.innerHTML = `<div>System</div>`;
+  }
+});
+
+function closeMenuSlide(){
+  menuSlide.style.display="none";
+}
+
+// Account popup functions
+function showAccountNames(){
+  const accInfo = document.getElementById("accountInfo");
+  accInfo.textContent = accounts.map((a,i)=>`${i+1}. ${a.name}${a.developer?" (Developer)":""}`).join("\n");
+}
+function closePop(){ document.getElementById("accountPop").style.display="none"; }
+</script>
+
+</body>
+</html>
+<!-- First Slide -->
+<div id="slide1" class="slide active-slide">
+  <div class="top-bar">DIBBU.7</div>
+
+  <div id="userInfo" style="display:none;">
+    <img id="topPic" src="">
+    <span id="topName"></span>
+  </div>
+
+  <!-- 3-line menu -->
+  <div id="menuBtn">☰</div>
+</div>
+
+<!-- Menu Slide -->
+<div id="menuSlide" class="slide" style="display:none; background:black; color:white; padding:20px;">
+  <span class="back" onclick="closeMenuSlide()">Back</span>
+  <h2 id="menuTitle">System</h2>
+  <div id="menuOptions" style="margin-top:20px; white-space:pre-line;"></div>
+</div>
+<!-- AI Slide -->
+<div id="aiSlide" class="slide" style="display:none; background:black; color:white; height:100vh; padding:20px;">
+  <span class="back" onclick="showSlide(0)" style="cursor:pointer; color:lightblue;">Back</span>
+  <h2>Diwash AI</h2>
+
+  <!-- Chat display -->
+  <div id="chatBox" style="border:1px solid white; height:60%; overflow-y:auto; padding:10px; margin-bottom:10px; white-space:pre-wrap;"></div>
+
+  <!-- Typing bar -->
+  <input type="text" id="userInput" placeholder="Ask Diwash AI..." style="width:75%; padding:10px; font-size:16px;">
+  <button id="sendBtn" style="padding:10px 15px; font-size:16px;">Send</button>
+</div><!-- AI Slide -->
+<div id="aiSlide" class="slide" style="display:none; background:black; color:white; height:100vh; padding:20px;">
+  <span class="back" onclick="showSlide(0)" style="cursor:pointer; color:lightblue;">Back</span>
+  <h2 style="margin-bottom:20px;">Diwash AI</h2>
+
+  <!-- Chat display -->
+  <div id="chatBox" style="border:1px solid #555; border-radius:10px; height:60%; overflow-y:auto; padding:10px; margin-bottom:15px; background:#111; white-space:pre-wrap;"></div>
+
+  <!-- Typing bar container -->
+  <div style="display:flex; align-items:center; gap:10px;">
+    <input type="text" id="userInput" placeholder="Ask Diwash..." 
+           style="flex:1; padding:12px 15px; font-size:16px; border-radius:25px; border:1px solid #555; background:#222; color:white; outline:none; transition:0.2s;">
+    <button id="sendBtn" 
+           style="padding:12px 20px; border-radius:25px; border:none; background:purple; color:white; font-size:16px; cursor:pointer;">
+      Send
+    </button>
+  </div>
+</div>
+/* Optional CSS for typing bar focus */
+#userInput:focus {
+  border:1px solid purple;
+  box-shadow:0 0 5px purple;
+}
+#sendBtn:hover {
+  background:darkviolet;
+}
+<!-- AI Slide (any user can access) -->
+<div id="aiSlide" class="slide" style="display:none; background:black; color:white; height:100vh; padding:20px;">
+  <span class="back" onclick="showSlide(0)" style="cursor:pointer; color:lightblue;">Back</span>
+  <h2 style="margin-bottom:20px;">Diwash AI</h2>
+
+  <div id="chatBox" style="border:1px solid #555; border-radius:10px; height:60%; overflow-y:auto; padding:10px; margin-bottom:15px; background:#111; white-space:pre-wrap;"></div>
+
+  <div style="display:flex; align-items:center; gap:10px;">
+    <input type="text" id="userInput" placeholder="Ask Diwash..." 
+           style="flex:1; padding:12px 15px; font-size:16px; border-radius:25px; border:1px solid #555; background:#222; color:white; outline:none; transition:0.2s;">
+    <button id="sendBtn" 
+           style="padding:12px 20px; border-radius:25px; border:none; background:purple; color:white; font-size:16px; cursor:pointer;">
+      Send
+    </button>
+  </div>
+</div>
+
+<script>
+const chatBox = document.getElementById("chatBox");
+const userInput = document.getElementById("userInput");
+const sendBtn = document.getElementById("sendBtn");
+
+// Generate answer dynamically for all users
+function generateAnswer(question){
+    question = question.toLowerCase();
+    let answer = "";
+
+    if(question.includes("hello") || question.includes("hi")){
+        answer = "Hello! I am Diwash AI. I can answer questions about the website and accounts.";
+    } else if(question.includes("account")){
+        answer = "You can create a new account using the 'Create New Dibbu Account' button.";
+    } else if(question.includes("developer")){
+        answer = "Developer account has full access to all accounts and feedback.";
+    } else if(question.includes("help")){
+        answer = "You can ask anything about the website, accounts, or system features.";
+    } else {
+        answer = "I am Diwash AI. I am learning to answer more questions!";
+    }
+
+    return answer;
+}
+
+// Typing effect
+function typeAnswer(text){
+    let i = 0;
+    const para = document.createElement("p");
+    para.style.color = "lightgreen";
+    para.innerHTML = "<b>Diwash:</b> ";
+    chatBox.appendChild(para);
+
+    const interval = setInterval(()=>{
+        para.innerHTML += text.charAt(i);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        i++;
+        if(i >= text.length) clearInterval(interval);
+    }, 25);
+}
+
+// Send button works for everyone
+sendBtn.addEventListener("click", ()=>{
+    const question = userInput.value.trim();
+    if(question === "") return;
+
+    const userPara = document.createElement("p");
+    userPara.style.color = "lightblue";
+    userPara.innerHTML = `<b>You:</b> ${question}`;
+    chatBox.appendChild(userPara);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    userInput.value = "";
+
+    const answer = generateAnswer(question);
+    typeAnswer(answer);
+});
+</script>
+<!-- Menu Slide -->
+<div id="menuSlide" class="slide" style="display:none; background:black; color:white; padding:20px;">
+  <span class="back" onclick="closeMenuSlide()">Back</span>
+  <h2 id="menuTitle">System</h2>
+  <div id="menuOptions" style="margin-top:20px; white-space:pre-line;"></div>
+</div>
+const menuBtn = document.getElementById("menuBtn");
+const menuSlide = document.getElementById("menuSlide");
+const menuOptions = document.getElementById("menuOptions");
+const menuTitle = document.getElementById("menuTitle");
+const topName = document.getElementById("topName");
+
+menuBtn.addEventListener("click", ()=>{
+    menuSlide.style.display="block";
+    const currentAcc = accounts.find(a => a.name === topName.textContent);
+
+    const systemParagraph = `
+Welcome to dibbu.com
+This website is made by Dibbu (Diwash Dulal) with the help of ChatGPT AI tool.
+Gmail: diwashdulal47@gmail.com
+YouTube: DIWASH
+Instagram: Diwash_7_7
+`;
+
+    if(currentAcc && currentAcc.developer){
+        menuTitle.textContent = "System (Developer)";
+        menuOptions.innerHTML = systemParagraph + "\n\nAccounts:\n" + 
+          accounts.map((a,i)=>`${i+1}. ${a.name}${a.developer?" (Developer)":""}`).join("\n") +
+          `\n\nTotal accounts: ${accounts.length}`;
+    } else {
+        menuTitle.textContent = "System";
+        menuOptions.innerHTML = systemParagraph; // normal users do NOT see accounts
+    }
+});
+
+function closeMenuSlide(){
+    menuSlide.style.display="none";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dibbu Website</title>
+<style>
+body, html {margin:0; padding:0; height:100%; font-family:Arial, sans-serif; background:black; color:white;}
+.slide {display:none; width:100%; height:100vh; position:relative;}
+.active-slide {display:block;}
+.top-bar {background:purple; color:white; height:60px; line-height:60px; text-align:center; font-size:24px;}
+#menuBtn {position:absolute; top:10px; right:10px; font-size:28px; cursor:pointer;}
+#userInfo {position:absolute; top:10px; left:10px; display:flex; align-items:center; gap:5px;}
+#userInfo img {width:40px; height:40px; border-radius:50%;}
+.button {padding:10px 20px; font-size:18px; margin-top:20px; cursor:pointer;}
+.popup {position:absolute; top:20%; left:10%; width:80%; background:#111; border:1px solid white; padding:20px; display:none;}
+.back {cursor:pointer; color:lightblue; display:block; margin-bottom:10px;}
+input, select {padding:8px; margin-top:8px; font-size:16px; width:100%; border-radius:5px; border:1px solid #555; background:#222; color:white;}
+#sendBtn {padding:12px 20px; border-radius:25px; border:none; background:purple; color:white; font-size:16px; cursor:pointer;}
+#userInput {flex:1; padding:12px 15px; font-size:16px; border-radius:25px; border:1px solid #555; background:#222; color:white; outline:none; transition:0.2s;}
+#userInput:focus {border:1px solid purple; box-shadow:0 0 5px purple;}
+</style>
+</head>
+<body>
+
+<!-- Slide 1: Welcome -->
+<div id="slide1" class="slide active-slide">
+  <div class="top-bar">DIBBU.7</div>
+  <div id="userInfo" style="display:none;">
+    <img id="topPic" src="">
+    <span id="topName"></span>
+  </div>
+  <div id="menuBtn">☰</div>
+  <div style="position:absolute; top:120px; width:100%; text-align:center;">
+    <button id="createBtn" class="button">Create New Dibbu Account</button>
+  </div>
+</div>
+
+<!-- Slide 2: Account Info -->
+<div id="slide2" class="slide">
+  <div class="top-bar">DIBBU.7</div>
+  <span class="back" onclick="showSlide(0)">Back</span>
+  <h2>Enter Account Info</h2>
+  <input id="fullName" placeholder="Full Name">
+  <input id="dob" placeholder="Date of Birth" type="date">
+  <select id="sex">
+    <option value="">Select Sex</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+    <option value="Other">Other</option>
+  </select>
+  <button class="button" id="nextToSlide3">Next</button>
+</div>
+
+<!-- Slide 3: Profile + Password -->
+<div id="slide3" class="slide">
+  <div class="top-bar">DIBBU.7</div>
+  <span class="back" onclick="showSlide(1)">Back</span>
+  <h2>Profile Picture & Password</h2>
+  <input id="profilePic" type="file" accept="image/*">
+  <input id="password" type="password" placeholder="Password">
+  <button class="button" id="finishAccount">Finish</button>
+</div>
+
+<!-- System Slide -->
+<div id="menuSlide" class="slide">
+  <span class="back" onclick="closeMenuSlide()">Back</span>
+  <h2 id="menuTitle">System</h2>
+  <div id="menuOptions" style="white-space:pre-line; margin-top:20px;"></div>
+</div>
+
+<!-- AI Slide -->
+<div id="aiSlide" class="slide">
+  <span class="back" onclick="showSlide(0)">Back</span>
+  <h2>Diwash AI</h2>
+  <div id="chatBox" style="border:1px solid #555; border-radius:10px; height:60%; overflow-y:auto; padding:10px; margin-bottom:15px; background:#111; white-space:pre-wrap;"></div>
+  <div style="display:flex; gap:10px;">
+    <input id="userInput" placeholder="Ask Diwash...">
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+<script>
+// ---------- ACCOUNT STORAGE ----------
+let accounts = JSON.parse(localStorage.getItem("dibbuAccounts")) || [];
+
+// Developer account
+if(!accounts.some(a=>a.name==="Developerdibu")){
+  accounts.push({name:"Developerdibu", password:"dibbu-7", pic:"", developer:true});
+  localStorage.setItem("dibbuAccounts", JSON.stringify(accounts));
+}
+
+const slide1 = document.getElementById("slide1");
+const slide2 = document.getElementById("slide2");
+const slide3 = document.getElementById("slide3");
+const aiSlide = document.getElementById("aiSlide");
+const menuBtn = document.getElementById("menuBtn");
+const menuSlide = document.getElementById("menuSlide");
+const menuOptions = document.getElementById("menuOptions");
+const menuTitle = document.getElementById("menuTitle");
+const createBtn = document.getElementById("createBtn");
+const topName = document.getElementById("topName");
+const topPic = document.getElementById("topPic");
+const userInfo = document.getElementById("userInfo");
+
+// ---------- SLIDE FUNCTIONS ----------
+function showSlide(n){
+  [slide1, slide2, slide3, menuSlide, aiSlide].forEach(s=>s.style.display="none");
+  if(n===0) slide1.style.display="block";
+  if(n===1) slide2.style.display="block";
+  if(n===2) slide3.style.display="block";
+  if(n===3) aiSlide.style.display="block";
+}
+
+// ---------- CREATE ACCOUNT ----------
+createBtn.addEventListener("click", ()=>{
+  showSlide(1);
+});
+
+// Slide2 -> Slide3
+document.getElementById("nextToSlide3").addEventListener("click", ()=>{
+  const name = document.getElementById("fullName").value.trim();
+  const dob = document.getElementById("dob").value;
+  const sex = document.getElementById("sex").value;
+  if(!name || !dob || !sex){ alert("Fill all fields"); return; }
+  if(accounts.some(a=>a.name.toLowerCase()===name.toLowerCase())){ alert("Name already used"); return; }
+  sessionStorage.setItem("newAcc",{name:name,dob:dob,sex:sex});
+  showSlide(2);
+});
+
+// Finish Account
+document.getElementById("finishAccount").addEventListener("click", ()=>{
+  const picInput = document.getElementById("profilePic");
+  const password = document.getElementById("password").value;
+  if(!password){ alert("Enter password"); return; }
+  const newAcc = JSON.parse(sessionStorage.getItem("newAcc"));
+  let pic = "";
+  if(picInput.files && picInput.files[0]){
+    pic = URL.createObjectURL(picInput.files[0]);
+  }
+  accounts.push({...newAcc,password:password,pic:pic,developer:false});
+  localStorage.setItem("dibbuAccounts", JSON.stringify(accounts));
+  topName.textContent = newAcc.name;
+  if(pic) topPic.src = pic;
+  userInfo.style.display="flex";
+  createBtn.style.display="none";
+  alert("Account Created!");
+  showSlide(0);
+});
+
+// ---------- SYSTEM MENU ----------
+menuBtn.addEventListener("click", ()=>{
+  menuSlide.style.display="block";
+  const currentAcc = accounts.find(a => a.name===topName.textContent);
+  const systemParagraph = `
+Welcome to dibbu.com
+This website is made by Dibbu (Diwash Dulal) with the help of ChatGPT AI tool.
+Gmail: diwashdulal47@gmail.com
+YouTube: DIWASH
+Instagram: Diwash_7_7
+`;
+  if(currentAcc && currentAcc.developer){
+    menuTitle.textContent = "System (Developer)";
+    menuOptions.innerHTML = systemParagraph + "\n\nAccounts:\n" +
+      accounts.map((a,i)=>`${i+1}. ${a.name}${a.developer?" (Developer)":""}`).join("\n") +
+      `\n\nTotal accounts: ${accounts.length}`;
+  } else {
+    menuTitle.textContent = "System";
+    menuOptions.innerHTML = systemParagraph;
+  }
+});
+function closeMenuSlide(){ menuSlide.style.display="none"; }
+
+// ---------- AI LOGIC ----------
+const chatBox = document.getElementById("chatBox");
+const userInput = document.getElementById("userInput");
+const sendBtn = document.getElementById("sendBtn");
+
+function typeAnswer(text){
+  let i=0;
+  const para = document.createElement("p");
+  para.style.color="lightgreen";
+  para.innerHTML="<b>Diwash:</b> ";
+  chatBox.appendChild(para);
+  const interval = setInterval(()=>{
+    para.innerHTML+=text.charAt(i);
+    chatBox.scrollTop=chatBox.scrollHeight;
+    i++;
+    if(i>=text.length) clearInterval(interval);
+  },25);
+}
+
+function generateAnswer(question){
+  question = question.toLowerCase();
+  if(question.includes("hello")||question.includes("hi")) return "Hello! I am Diwash AI, your assistant.";
+  if(question.includes("account")) return "Click 'Create New Dibbu Account' to start an account.";
+  if(question.includes("developer")) return "Developer can see all accounts and manage system settings.";
+  if(question.includes("help")) return "Ask me anything about the website, accounts, or system.";
+  return "I am Diwash AI. I am learning to answer more questions!";
+}
+
+sendBtn.addEventListener("click", ()=>{
+  const question = userInput.value.trim();
+  if(!question) return;
+  const userPara = document.createElement("p");
+  userPara.style.color="lightblue";
+  userPara.innerHTML=`<b>You:</b> ${question}`;
+  chatBox.appendChild(userPara);
+  chatBox.scrollTop=chatBox.scrollHeight;
+  userInput.value="";
+  typeAnswer(generateAnswer(question));
+});
+</script>
+
+</body>
+</html>
+<!-- Menu Slide (for system/other options) -->
+<div id="menuSlide" class="slide" style="display:none; background:black; color:white; padding:20px;">
+  <span class="back" onclick="closeMenuSlide()">Back</span>
+  <h2 id="menuTitle">Menu</h2>
+  <div id="menuOptions" style="margin-top:20px; white-space:pre-line;"></div>
+</div>
+const menuBtn = document.getElementById("menuBtn");
+const menuSlide = document.getElementById("menuSlide");
+const menuOptions = document.getElementById("menuOptions");
+const menuTitle = document.getElementById("menuTitle");
+
+menuBtn.addEventListener("click", ()=>{
+    const currentAcc = accounts.find(a => a.name===topName.textContent);
+    menuSlide.style.display="block";
+
+    // Base menu options
+    let options = ["Account","Setting","About","Help","Feedback"];
+
+    // Developer only: add System option
+    if(currentAcc && currentAcc.developer){
+        options.push("System");
+    }
+
+    menuTitle.textContent = "Menu";
+    menuOptions.innerHTML = options.map(opt=>`<div style="cursor:pointer; color:lightblue;" onclick="menuClick('${opt}')">${opt}</div>`).join("\n");
+});
+
+// Menu option click handler
+function menuClick(option){
+    const currentAcc = accounts.find(a => a.name===topName.textContent);
+    if(option==="System" && currentAcc && currentAcc.developer){
+        menuTitle.textContent = "System";
+        menuOptions.innerHTML = `
+Welcome to dibbu.com
+This website is made by Dibbu (Diwash Dulal) with the help of ChatGPT AI tool.
+Gmail: diwashdulal47@gmail.com
+YouTube: DIWASH
+Instagram: Diwash_7_7
+Accounts:
+` + accounts.map((a,i)=>`${i+1}. ${a.name}${a.developer?" (Developer)":""}`).join("\n") +
+`\nTotal accounts: ${accounts.length}`;
+    }
+    else if(option==="Account"){ alert("Account clicked"); }
+    else if(option==="Setting"){ alert("Settings clicked"); }
+    else if(option==="About"){ alert("About clicked"); }
+    else if(option==="Help"){ alert("Help clicked"); }
+    else if(option==="Feedback"){ alert("Feedback clicked"); }
+}
+
+function closeMenuSlide(){ menuSlide.style.display="none"; }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dibbu Website</title>
+<style>
+body, html {margin:0; padding:0; height:100%; font-family:Arial, sans-serif; background:black; color:white;}
+.slide {display:none; width:100%; height:100vh; position:relative;}
+.active-slide {display:block;}
+.top-bar {background:purple; color:white; height:60px; line-height:60px; text-align:center; font-size:24px;}
+#menuBtn {position:absolute; top:10px; right:10px; font-size:28px; cursor:pointer;}
+#userInfo {position:absolute; top:10px; left:10px; display:flex; align-items:center; gap:5px;}
+#userInfo img {width:40px; height:40px; border-radius:50%;}
+.button {padding:10px 20px; font-size:18px; margin-top:20px; cursor:pointer;}
+input, select {padding:8px; margin-top:8px; font-size:16px; width:100%; border-radius:5px; border:1px solid #555; background:#222; color:white;}
+.back {cursor:pointer; color:lightblue; display:block; margin-bottom:10px;}
+#sendBtn {padding:12px 20px; border-radius:25px; border:none; background:purple; color:white; font-size:16px; cursor:pointer;}
+#userInput {flex:1; padding:12px 15px; font-size:16px; border-radius:25px; border:1px solid #555; background:#222; color:white; outline:none; transition:0.2s;}
+#userInput:focus {border:1px solid purple; box-shadow:0 0 5px purple;}
+</style>
+</head>
+<body>
+
+<!-- Slide 1: Welcome -->
+<div id="slide1" class="slide active-slide">
+  <div class="top-bar">DIBBU.7</div>
+  <div id="userInfo" style="display:none;">
+    <img id="topPic" src="">
+    <span id="topName"></span>
+  </div>
+  <div id="menuBtn">☰</div>
+  <div style="position:absolute; top:120px; width:100%; text-align:center;">
+    <button id="createBtn" class="button">Create New Dibbu Account</button>
+    <button id="openAI" class="button">Open Diwash AI</button>
+  </div>
+</div>
+
+<!-- Slide 2: Account Info -->
+<div id="slide2" class="slide">
+  <div class="top-bar">DIBBU.7</div>
+  <span class="back" onclick="showSlide(0)">Back</span>
+  <h2>Enter Account Info</h2>
+  <input id="fullName" placeholder="Full Name">
+  <input id="dob" placeholder="Date of Birth" type="date">
+  <select id="sex">
+    <option value="">Select Sex</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+    <option value="Other">Other</option>
+  </select>
+  <button class="button" id="nextToSlide3">Next</button>
+</div>
+
+<!-- Slide 3: Profile + Password -->
+<div id="slide3" class="slide">
+  <div class="top-bar">DIBBU.7</div>
+  <span class="back" onclick="showSlide(1)">Back</span>
+  <h2>Profile Picture & Password</h2>
+  <input id="profilePic" type="file" accept="image/*">
+  <input id="password" type="password" placeholder="Password">
+  <button class="button" id="finishAccount">Finish</button>
+</div>
+
+<!-- System Slide -->
+<div id="menuSlide" class="slide">
+  <span class="back" onclick="closeMenuSlide()">Back</span>
+  <h2 id="menuTitle">Menu</h2>
+  <div id="menuOptions" style="white-space:pre-line; margin-top:20px;"></div>
+</div>
+
+<!-- AI Slide -->
+<div id="aiSlide" class="slide">
+  <span class="back" onclick="showSlide(0)">Back</span>
+  <h2>Diwash AI</h2>
+  <div id="chatBox" style="border:1px solid #555; border-radius:10px; height:60%; overflow-y:auto; padding:10px; margin-bottom:15px; background:#111; white-space:pre-wrap;"></div>
+  <div style="display:flex; gap:10px;">
+    <input id="userInput" placeholder="Ask Diwash...">
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+<script>
+// ---------- ACCOUNT STORAGE ----------
+let accounts = JSON.parse(localStorage.getItem("dibbuAccounts")) || [];
+
+// Developer account
+if(!accounts.some(a=>a.name==="Developerdibu")){
+  accounts.push({name:"Developerdibu", password:"dibbu-7", pic:"", developer:true});
+  localStorage.setItem("dibbuAccounts", JSON.stringify(accounts));
+}
+
+const slide1 = document.getElementById("slide1");
+const slide2 = document.getElementById("slide2");
+const slide3 = document.getElementById("slide3");
+const aiSlide = document.getElementById("aiSlide");
+const menuBtn = document.getElementById("menuBtn");
+const menuSlide = document.getElementById("menuSlide");
+const menuOptions = document.getElementById("menuOptions");
+const menuTitle = document.getElementById("menuTitle");
+const createBtn = document.getElementById("createBtn");
+const topName = document.getElementById("topName");
+const topPic = document.getElementById("topPic");
+const userInfo = document.getElementById("userInfo");
+const openAI = document.getElementById("openAI");
+
+// ---------- SLIDE FUNCTIONS ----------
+function showSlide(n){
+  [slide1, slide2, slide3, menuSlide, aiSlide].forEach(s=>s.style.display="none");
+  if(n===0) slide1.style.display="block";
+  if(n===1) slide2.style.display="block";
+  if(n===2) slide3.style.display="block";
+  if(n===3) aiSlide.style.display="block";
+}
+
+// ---------- CREATE ACCOUNT ----------
+createBtn.addEventListener("click", ()=>{
+  showSlide(1);
+});
+
+// Slide2 -> Slide3
+document.getElementById("nextToSlide3").addEventListener("click", ()=>{
+  const name = document.getElementById("fullName").value.trim();
+  const dob = document.getElementById("dob").value;
+  const sex = document.getElementById("sex").value;
+  if(!name || !dob || !sex){ alert("Fill all fields"); return; }
+  if(accounts.some(a=>a.name.toLowerCase()===name.toLowerCase())){ alert("Name already used"); return; }
+  sessionStorage.setItem("newAcc",{name:name,dob:dob,sex:sex});
+  showSlide(2);
+});
+
+// Finish Account
+document.getElementById("finishAccount").addEventListener("click", ()=>{
+  const picInput = document.getElementById("profilePic");
+  const password = document.getElementById("password").value;
+  if(!password){ alert("Enter password"); return; }
+  const newAcc = JSON.parse(sessionStorage.getItem("newAcc"));
+  let pic = "";
+  if(picInput.files && picInput.files[0]){
+    pic = URL.createObjectURL(picInput.files[0]);
+  }
+  accounts.push({...newAcc,password:password,pic:pic,developer:false});
+  localStorage.setItem("dibbuAccounts", JSON.stringify(accounts));
+  topName.textContent = newAcc.name;
+  if(pic) topPic.src = pic;
+  userInfo.style.display="flex";
+  createBtn.style.display="none";
+  alert("Account Created!");
+  showSlide(0);
+});
+
+// ---------- MENU SYSTEM ----------
+menuBtn.addEventListener("click", ()=>{
+  menuSlide.style.display="block";
+  const currentAcc = accounts.find(a => a.name===topName.textContent);
+  let options = ["Account","Setting","About","Help","Feedback"];
+  if(currentAcc && currentAcc.developer) options.push("System");
+  menuTitle.textContent = "Menu";
+  menuOptions.innerHTML = options.map(opt=>`<div style="cursor:pointer; color:lightblue;" onclick="menuClick('${opt}')">${opt}</div>`).join("\n");
+});
+
+function menuClick(option){
+  const currentAcc = accounts.find(a => a.name===topName.textContent);
+  if(option==="System" && currentAcc && currentAcc.developer){
+    menuTitle.textContent = "System";
+    menuOptions.innerHTML = `
+Welcome to dibbu.com
+This website is made by Dibbu (Diwash Dulal) with the help of ChatGPT AI tool.
+Gmail: diwashdulal47@gmail.com
+YouTube: DIWASH
+Instagram: Diwash_7_7
+Accounts:
+` + accounts.map((a,i)=>`${i+1}. ${a.name}${a.developer?" (Developer)":""}`).join("\n") +
+`\nTotal accounts: ${accounts.length}`;
+  }
+  else if(option==="Account"){ alert("Account clicked"); }
+  else if(option==="Setting"){ alert("Settings clicked"); }
+  else if(option==="About"){ alert("About clicked"); }
+  else if(option==="Help"){ alert("Help clicked"); }
+  else if(option==="Feedback"){ alert("Feedback clicked"); }
+}
+
+function closeMenuSlide(){ menuSlide.style.display="none"; }
+
+// ---------- OPEN AI ----------
+openAI.addEventListener("click", ()=>{ showSlide(3); });
+
+// ---------- AI LOGIC ----------
+const chatBox = document.getElementById("chatBox");
+const userInput = document.getElementById("userInput");
+const sendBtn = document.getElementById("sendBtn");
+
+function typeAnswer(text){
+  let i=0;
+  const para = document.createElement("p");
+  para.style.color="lightgreen";
+  para.innerHTML="<b>Diwash:</b> ";
+  chatBox.appendChild(para);
+  const interval = setInterval(()=>{
+    para.innerHTML+=text.charAt(i);
+    chatBox.scrollTop=chatBox.scrollHeight;
+    i++;
+    if(i>=text.length) clearInterval(interval);
+  },25);
+}
+
+function generateAnswer(question){
+  question = question.toLowerCase();
+  if(question.includes("hello")||question.includes("hi")) return "Hello! I am Diwash AI, your assistant.";
+  if(question.includes("account")) return "Click 'Create New Dibbu Account' to start an account.";
+  if(question.includes("developer")) return "Developer can see all accounts and manage system settings.";
+  if(question.includes("help")) return "Ask me anything about the website, accounts, or system.";
+  return "I am Diwash AI. I am learning to answer more questions!";
+}
+
+sendBtn.addEventListener("click", ()=>{
+  const question = userInput.value.trim();
+  if(!question) return;
+  const userPara = document.createElement("p");
+  userPara.style.color="lightblue";
+  userPara.innerHTML=`<b>You:</b> ${question}`;
+  chatBox.appendChild(userPara);
+  chatBox.scrollTop=chatBox.scrollHeight;
+  userInput.value="";
+  typeAnswer(generateAnswer(question));
+});
+</script>
+
+</body>
+</html>
